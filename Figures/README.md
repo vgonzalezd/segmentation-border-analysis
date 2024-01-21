@@ -1,0 +1,18 @@
+# Additional evaluations
+
+## Seg-Grad-Cam oversimplification
+Despite the Grad-Cam known limitations, sometimes resulting in an oversimplification, Grad-Cam is the most commonly used visualization tool for Deep Neuronal networks [1][2][3][4][5][8]. We therefore follow this common practice in the field to visualize the architectural differences. To check how Grad-Cams focus is influenced by noise or artifacts, we perform the “artifacts experiment” presented in the Figure below where the Grad-CAM activations of the Soleus muscle borders are presented for corrupted and clean ultrasound images.  Corrupted images are created adding patches of ultrasound artifacts such as high electronic noise and histogram contrast changes, for the leg dataset. 
+
+One type of oversimplification could be the “signal lost patches” (in green) being activated when segmenting other types of borders because artifacts leads to new features the network has not seen before. We can however observe that this is not the case, no signal implies no useful information in the area, then no Grad-Cam activation for predicting borders inside the patches. Additionally, finding the completed borders in the Green patch, make uses of the evident borders of other muscles, to interpolate. 
+Another kind of oversimpliication could take place in the high-noise and low-contrast patches (In red and yellow). These areas contain evident borders but noise could lose the network and Grad-Cam could not present activations there. However, it is not the case. We continue observing activation because the borders in such patches continue being evident even if they have noise. 
+Grad-CAM proved to be independent of such artifacts and continues to focus on relevant regions. Seg-Grad-CAM is a method that can be used to provide explainability on the model attention, especially for ultrasound when divided into evident and complete borders.
+
+<img width="932" alt="image" src="https://github.com/Al3xand1a/segmentation-border-analysis/Figures/artifacts_experiment.png">
+
+## VIsualization of attention Gates of Attention UNet
+Using pretraining weights in the context of ultrasound volume segmentation is usually not feasible. In our case, since the volumes were big, we needed to adapt the size of the architecture, so we could not use the pre-trained weights. 
+To address the imbalance problem, we use Cross-Entropy loss with with labeling weighting of [0.9, 0.26, 0.31, 0.34] and [0.1, 0.25, 0.30, 0.31] for the Thyroid and the Leg dataset, corresponding to labels [background, Soleus, GM and GL] and [background, Thyroid, Aorta, Yugular] respectly, such information was added in the github repository. To find the weights, we calculate the inverse of the  percentage of pixels belonging to that class in the train dataset and we normalize the class weights to ensure they all sum up to 1.
+For A-Unet, we plot the attention gates in Figure below, it contains the 8 attention maps of the last decoder step. We could observe that attention gates improve the sensitivity and accuracy of dense labels by suppressing feature activations in irrelevant regions, which explain why Seg-Grad-Cam of Attention UNet present more focus activation maps, but the Figure did not give us information about the boundaries. Reason why we did not add it on the paper. The image below will be added in the github repository in case it could be of interest.
+
+
+<img width="932" alt="image" src="https://github.com/Al3xand1a/segmentation-border-analysis/Figures/Attention_gates.png">
